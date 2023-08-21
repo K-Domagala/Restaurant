@@ -6,19 +6,19 @@ const getMenu = async () => {
 }
 
 const getStores = async () => {
-    const stores = await client.query('SELECT name FROM locations')
+    const stores = await client.query('SELECT restaurant_name FROM locations')
     return stores.rows
 }
 
 const checkBookingAvailability = async (store, date) => {
     //get bookings using store and date
     const bookings = await client.query(
-        `SELECT start,
-            duration,
+        `SELECT booking_start,
+            long_booking,
             table_size
-        FROM booking
-        WHERE location = $1
-          AND date = $2`,
+        FROM bookings
+        WHERE restaurant_id = $1
+          AND booking_date = $2`,
         [store, date]
     )
     console.log('Bookings: ')
@@ -30,9 +30,11 @@ const checkBookingAvailability = async (store, date) => {
 
 const storeIdQuery = async (store) => {
     const storeQuery = await client.query(
-        'SELECT id FROM locations WHERE name = $1', [store]
+        'SELECT id FROM locations WHERE restaurant_name = $1', [store]
     )
-    return storeQuery.rows[0].id;
+    console.log(storeQuery.rows)
+    return 1
+    // return storeQuery.rows[0].id;
 }
 
 async function getStoreInfo(storeId, day){

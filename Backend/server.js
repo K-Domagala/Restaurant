@@ -25,10 +25,10 @@ app.get('/menu', async (req, res) => {
     console.log('recieved menu request')
     menu = (await getMenu()).rows;
     starters = menu.filter((item) => {
-      return item.type == 'starter'
+      return item.item_type == 'starter'
     })
-    main = menu.filter((item) => item.type=='main');
-    dessert = menu.filter((item) => item.type=='dessert');
+    main = menu.filter((item) => item.item_type=='main');
+    dessert = menu.filter((item) => item.item_type=='dessert');
     returnMenu = [{
       type: 'Starters',
       items: starters
@@ -71,7 +71,7 @@ app.get('/storeList', async (req, res) => {
   let storesArray = []
   const stores = await getStores();
   stores.forEach((entry) => {
-    storesArray.push(entry.name)
+    storesArray.push(entry.restaurant_name)
   })
   console.log('Stores: ')
   console.log(storesArray)
