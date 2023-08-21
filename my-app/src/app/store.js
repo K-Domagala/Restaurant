@@ -1,16 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-const userReducer = (state = '', action) => {
-  switch(action.type){
-    case 'LOG_IN':
-      return 'Welcome ' + action.payload;
-    case 'LOG_OUT':
-      return '';
-    default:
-      return state;
-  }
-}
-
 const nameReducer = (state = '', action) => {
   switch(action.type){
     case 'SET_NAME':
@@ -31,7 +20,6 @@ const phoneNumberReducer = (state = '', action) => {
 
 export const store = configureStore({
   reducer: {
-    user: userReducer,
     name: nameReducer,
     phoneNumber: phoneNumberReducer
   }

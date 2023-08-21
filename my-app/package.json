@@ -39,5 +39,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "description": "In this project, I have made a website for a restaurant where you can book yourself a table",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
 }
