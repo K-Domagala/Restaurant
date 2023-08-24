@@ -108,7 +108,6 @@ export default function Book () {
                     {stores}
                 </select>
             </div>
-            <h4>{storeId}</h4>
             {/**Select the number of guests.
              * Number of guests is stored in 'numOfGuests'*/}
             <div hidden={!selectedStore}>
@@ -123,7 +122,6 @@ export default function Book () {
             <div hidden={!selectedStore}>
                 <h3>Select the date of booking:</h3>
                 <Calendar onChange={setDate}/>
-                
             </div>
             <div hidden={!numOfGuests || !date}>
                 <h3>Select the duration of booking:</h3>
@@ -135,7 +133,7 @@ export default function Book () {
             </div>
             <div hidden={!numOfGuests || !date}>
             <   h3>Select the time slot:</h3>
-                <select>
+                <select value={selectedTime} onChange={e => setSelectedTime(e.target.value)}>
                     <option value='' disabled selected hidden>Select slot</option>
                     {timeSelect()}
                 </select>

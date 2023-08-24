@@ -49,7 +49,7 @@ app.get('/bookings', async (req, res) => {
   const bookingArray = getStoreInfo(storeId, date.getDay())
 
   let value = {
-    times: ['1:30', '2:30', '3:30', '5:50'],
+    times: ['01:30:00', '02:30:00', '03:30:00', '05:50:00'],
     seats: [57, 58, 23, 121]
   }
   checkBookingAvailability(storeId, date);
