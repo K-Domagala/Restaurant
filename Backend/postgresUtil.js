@@ -32,9 +32,7 @@ const storeIdQuery = async (store) => {
     const storeQuery = await client.query(
         'SELECT id FROM locations WHERE restaurant_name = $1', [store]
     )
-    console.log(storeQuery.rows)
-    return 1
-    // return storeQuery.rows[0].id;
+    return storeQuery.rows[0].id;
 }
 
 async function getStoreInfo(storeId, day){
@@ -83,4 +81,13 @@ async function getStoreInfo(storeId, day){
     return({openTime, closeTime, capacity})
 }
 
-module.exports = {getMenu, checkBookingAvailability, storeIdQuery, getStoreInfo, getStores}
+async function createBooking(info){
+    await client.query(
+        `INSERT INTO bookings(restaurant_id, booking_date, booking_start, table_size, long_booking, booking_name, phone)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [info.storeId, info.date, info.selectedTime, info.numOfGuests, true, info.name, info.phoneNumber]
+    ).then((res) => console.log(res))
+    .catch((e) => console.log(e))
+}
+
+module.exports = {getMenu, checkBookingAvailability, storeIdQuery, getStoreInfo, getStores, createBooking}

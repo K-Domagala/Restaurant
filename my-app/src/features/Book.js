@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css';
-import {getStores, checkTimes, formatDate, getStoreId, getBookings} from '../app/util';
+import {getStores, checkTimes, formatDate, formatTime, getStoreId, getBookings, makeBooking} from '../app/util';
 
 export default function Book () {
     const name = useSelector(store => store.name);
@@ -24,6 +24,7 @@ export default function Book () {
     const [duration, setDuration] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
     const [storeId, setStoreId] = useState('1');
+    const [error, setError] = useState('');
 
     const setName = (e) => {
         dispatch({
@@ -66,13 +67,17 @@ export default function Book () {
     const handleSubmit = (event) => {
         event.preventDefault()
         console.log('Sending info to API:')
-        console.log('Store: ' + selectedStore);
+        console.log('Store ID: ' + storeId);
         console.log('Date: ' + date);
         console.log('Time: ' + selectedTime);
         console.log('Guests: ' + numOfGuests);
         console.log('Duration: ' + duration)
         console.log('Name: ' + name);
         console.log('Phone number: ' + phoneNumber);
+        const details = {storeId, date, selectedTime, numOfGuests, duration, name, phoneNumber}
+        makeBooking(details).then((res) => {
+            setError(res)
+        })
     }
 
     const guestSelect = () => {
@@ -91,7 +96,7 @@ export default function Book () {
     const timeSelect = () => {
         const list = []
         for(let i = 0; i < availableTimes?.length; i++){
-            list.push(<option value={availableTimes[i]}> {availableTimes[i]} : {availableSeats[i]} seats available </option>)
+            list.push(<option value={availableTimes[i]}> {formatTime(availableTimes[i])} : {availableSeats[i]} seats available </option>)
         }
         return list
     }
@@ -140,6 +145,7 @@ export default function Book () {
             </div>
             <div hidden={!selectedStore || !selectedTime}>
                 <h3>Details:</h3>
+                <h2 className="error">{error}</h2>
                 <form onSubmit={handleSubmit}>
                     <label htmlFor='name'>Name: </label>
                     <input type='text' id='name' name='name' required defaultValue={name} onChange={setName}/><br />

@@ -4,7 +4,7 @@ const session = require('express-session');
 const cors = require('cors');
 const cookieParser = require('cookie-parser')
 const express = require('express');
-const { getMenu, getLocDetails, checkBookingAvailability, storeIdQuery, getStoreInfo, getStores} = require('./postgresUtil');
+const { getMenu, getLocDetails, checkBookingAvailability, storeIdQuery, getStoreInfo, getStores, createBooking} = require('./postgresUtil');
 const app = express();
 const port = 3001;
 
@@ -49,7 +49,7 @@ app.get('/bookings', async (req, res) => {
   const bookingArray = getStoreInfo(storeId, date.getDay())
 
   let value = {
-    times: ['01:30:00', '02:30:00', '03:30:00', '05:50:00'],
+    times: ['13:30:00', '02:30:00', '03:30:00', '05:50:00'],
     seats: [57, 58, 23, 121]
   }
   checkBookingAvailability(storeId, date);
@@ -76,6 +76,18 @@ app.get('/storeList', async (req, res) => {
   console.log('Stores: ')
   console.log(storesArray)
   res.json({storesArray})
+})
+
+app.post('/createBooking', async (req, res) => {
+  let msg = 'Request recieved';
+  console.log(req.query)
+  const {storeId, date, selectedTime, numOfGuests, duration, name, phoneNumber} = req.query;
+  if(!storeId || !date || !selectedTime || !numOfGuests || !duration || !name || !phoneNumber){
+    msg = 'Fill in every field'
+  } else {
+    createBooking({storeId, date, selectedTime, numOfGuests, duration, name, phoneNumber})
+  }
+  res.json({msg})
 })
 
 app.listen(port, () => {

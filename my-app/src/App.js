@@ -23,7 +23,7 @@ function App() {
     });
     dispatch({
       type: 'SET_PHONE_NUMBER',
-      payload: '0717'
+      payload: '07123456789'
     })
   }, [])
 

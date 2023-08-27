@@ -48,13 +48,7 @@ a{
   color: inherit;
 }
 
-.nav h1:hover{
-  cursor: pointer;
-  transition: 300ms;
-  background-color: gray;
-}
-
-.nav li:hover{
+.nav h1:hover, li:hover{
   cursor: pointer;
   transition: 300ms;
   background-color: gray;

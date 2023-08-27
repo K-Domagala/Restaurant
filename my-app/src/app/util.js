@@ -54,6 +54,16 @@ async function getOpenTimes(storeId, date){
     return res.data
 }
 
+export async function makeBooking(info){
+    const res = await Axios({
+        method: 'POST',
+        params: info,
+        withCredentials: true,
+        url: 'http://localhost:3001/createBooking'
+    })
+    return res.data.msg
+}
+
 export async function getLocations(){
     return new Promise(r => {
         r([
@@ -85,5 +95,7 @@ export function formatDate(date){
 }
 
 export function formatTime(time){
-    return time.slice(0, 5);
+    const hour = parseInt(time.slice(0, 2)).toString();
+    const min = time.slice(3, 5);
+    return hour + ':' + min;
 }
