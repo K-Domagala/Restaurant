@@ -24,7 +24,7 @@ export default function Book () {
     const [duration, setDuration] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
     const [storeId, setStoreId] = useState('1');
-    const [error, setError] = useState('');
+    const [confirmation, setConfirmation] = useState({});
 
     const setName = (e) => {
         dispatch({
@@ -76,7 +76,7 @@ export default function Book () {
         console.log('Phone number: ' + phoneNumber);
         const details = {storeId, date, selectedTime, numOfGuests, duration, name, phoneNumber}
         makeBooking(details).then((res) => {
-            setError(res)
+            setConfirmation(res)
         })
     }
 
@@ -145,7 +145,7 @@ export default function Book () {
             </div>
             <div hidden={!selectedStore || !selectedTime}>
                 <h3>Details:</h3>
-                <h2 className="error">{error}</h2>
+                <h2 className={confirmation.class}>{confirmation.msg}</h2>
                 <form onSubmit={handleSubmit}>
                     <label htmlFor='name'>Name: </label>
                     <input type='text' id='name' name='name' required defaultValue={name} onChange={setName}/><br />

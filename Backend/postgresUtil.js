@@ -41,32 +41,32 @@ async function getStoreInfo(storeId, day){
     let dayClose;
     switch(day){
         case 0:
-        dayOpen = 'sun-open'
-        dayClose = 'sun-close'
+        dayOpen = 'sun_open'
+        dayClose = 'sun_close'
         break;
         case 1:
-        dayOpen = 'mon-open'
-        dayClose = 'mon-close'
+        dayOpen = 'mon_open'
+        dayClose = 'mon_close'
         break;
         case 2:
-        dayOpen = 'tue-open'
-        dayClose = 'tue-close'
+        dayOpen = 'tue_open'
+        dayClose = 'tue_close'
         break;
         case 3:
-        dayOpen = 'wed-open'
-        dayClose = 'wed-close'
+        dayOpen = 'wed_open'
+        dayClose = 'wed_close'
         break;
         case 4:
-        dayOpen = 'thu-open'
-        dayClose = 'thu-close'
+        dayOpen = 'thu_open'
+        dayClose = 'thu_close'
         break;
         case 5:
-        dayOpen = 'fri-open'
-        dayClose = 'fri-close'
+        dayOpen = 'fri_open'
+        dayClose = 'fri_close'
         break;
         case 6:
-        dayOpen = 'sat-open'
-        dayClose = 'sat-close'
+        dayOpen = 'sat_open'
+        dayClose = 'sat_close'
     }
     //run query to get all the details for the store
     const data = (await client.query(

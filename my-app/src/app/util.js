@@ -61,7 +61,10 @@ export async function makeBooking(info){
         withCredentials: true,
         url: 'http://localhost:3001/createBooking'
     })
-    return res.data.msg
+    if(res.data.e){
+        console.log(res.data.e)
+    }
+    return res.data
 }
 
 export async function getLocations(){
