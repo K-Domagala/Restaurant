@@ -4,7 +4,7 @@ const session = require('express-session');
 const cors = require('cors');
 const cookieParser = require('cookie-parser')
 const express = require('express');
-const { getMenu, getLocDetails, checkBookingAvailability, storeIdQuery, getStoreInfo, getStores, createBooking} = require('./postgresUtil');
+const { getMenu, getLocDetails, checkBookingAvailability, storeIdQuery, getStoreInfo, getStores, createBooking, convertToSeconds, convertToTime} = require('./postgresUtil');
 const app = express();
 const port = 3001;
 
@@ -45,16 +45,29 @@ app.get('/menu', async (req, res) => {
 app.get('/bookings', async (req, res) => {
   const storeId = req.query.store;
   const date = new Date(req.query.date)
+  let times = []
+  let seats = []
+  let timesString = []
+  const longBooking = true;
 
   const storeInfo = await getStoreInfo(storeId, date.getDay())
-  console.log(storeInfo.closeTime)
-  const closeTime = new Date(0)
-  console.log(closeTime)
+  const closeTime = convertToSeconds(storeInfo.closeTime)
+  const openTime = convertToSeconds(storeInfo.openTime)
+  const capacity = storeInfo.capacity
 
-  let value = {
-    times: ['13:30:00', '02:30:00', '03:30:00', '05:50:00'],
-    seats: [57, 58, 23, 121]
+  for(let i = openTime; i < closeTime - (longBooking ? 60: 30); i+=30){
+    times.push(i)
   }
+
+  times.forEach((time) => {
+    timesString.push(convertToTime(time));
+  })
+
+  times.forEach((element) => {
+    seats.push(capacity)
+  })
+
+  let value = {times: timesString, seats}
   checkBookingAvailability(storeId, date);
   res.json(value)
 })
@@ -78,11 +91,11 @@ app.get('/storeList', async (req, res) => {
 
 app.post('/createBooking', async (req, res) => {
   console.log(req.query)
-  const {storeId, date, selectedTime, numOfGuests, duration, name, phoneNumber} = req.query;
-  if(!storeId || !date || !selectedTime || !numOfGuests || !duration || !name || !phoneNumber){
+  const {storeId, date, selectedTime, numOfGuests, longBooking, name, phoneNumber} = req.query;
+  if(!storeId || !date || !selectedTime || !numOfGuests || !longBooking || !name || !phoneNumber){
     res.json({msg: 'Fill in every field', class: 'error'})
   } else {
-    createBooking({storeId, date, selectedTime, numOfGuests, duration, name, phoneNumber})
+    createBooking({storeId, date, selectedTime, numOfGuests, longBooking, name, phoneNumber})
     .then(() => res.json({msg: 'Booking placed'}))
     .catch((e) => res.json({msg: 'Something went wrong', class: 'error', error: e}))
   }

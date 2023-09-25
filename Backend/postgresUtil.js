@@ -85,9 +85,29 @@ async function createBooking(info){
     await client.query(
         `INSERT INTO bookings(restaurant_id, booking_date, booking_start, table_size, long_booking, booking_name, phone)
         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [info.storeId, info.date, info.selectedTime, info.numOfGuests, true, info.name, info.phoneNumber]
+        [info.storeId, info.date, info.selectedTime, info.numOfGuests, info.longBooking, info.name, info.phoneNumber]
     ).then((res) => console.log(res))
     .catch((e) => console.log(e))
 }
 
-module.exports = {getMenu, checkBookingAvailability, storeIdQuery, getStoreInfo, getStores, createBooking}
+function convertToSeconds(timeString){
+    try{
+        const hour = timeString.slice(0, 2)
+        const minute = timeString.slice(3, 5)
+        return parseInt(hour)*60 + parseInt(minute)
+    } catch(e) {
+        return null
+    }
+}
+
+function convertToTime(timeNumber){
+    const hours = Math.floor(timeNumber / 60);
+    const minutes = timeNumber % 60;
+    return `${padToTwoDigits(hours)}:${padToTwoDigits(minutes)}`;
+}
+
+function padToTwoDigits(num) {
+    return num.toString().padStart(2, "0");
+}
+
+module.exports = {getMenu, checkBookingAvailability, storeIdQuery, getStoreInfo, getStores, createBooking, convertToSeconds, convertToTime}

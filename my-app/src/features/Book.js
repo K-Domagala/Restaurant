@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css';
-import {getStores, checkTimes, formatDate, formatTime, getStoreId, getBookings, makeBooking} from '../app/util';
+import {getStores, checkTimes, formatDate, formatTime, getStoreId, getTimeSlotsArray, makeBooking} from '../app/util';
 
 export default function Book () {
     const name = useSelector(store => store.name);
@@ -21,7 +21,7 @@ export default function Book () {
     const [availableTimes, setAvailableTimes] = useState([]);
     const [availableSeats, setAvailableSeats] = useState('');
     const [numOfGuests, setNumOfGuests] = useState('');
-    const [duration, setDuration] = useState('');
+    const [longBooking, setLongBooking] = useState(false);
     const [selectedTime, setSelectedTime] = useState('');
     const [storeId, setStoreId] = useState('1');
     const [confirmation, setConfirmation] = useState({});
@@ -51,14 +51,14 @@ export default function Book () {
 
     useEffect(() => {
         if(storeId && date){
-        getBookings(storeId, date?.toJSON()).then(res => {
+        getTimeSlotsArray(storeId, date?.toJSON(), longBooking).then(res => {
             setAvailableTimes(res.data.times);
             setAvailableSeats(res.data.seats);
             console.log(res.data)
         }).catch((e) => console.log(e))
         console.log(formatDate(date));
         console.log(date?.toJSON())}
-    }, [storeId, date, duration])
+    }, [storeId, date, longBooking])
     // useEffect(() => {
     //     let newDate = date;
     //     date.setHours(selectedHour);
@@ -71,10 +71,10 @@ export default function Book () {
         console.log('Date: ' + date);
         console.log('Time: ' + selectedTime);
         console.log('Guests: ' + numOfGuests);
-        console.log('Duration: ' + duration)
+        console.log('Long Booking: ' + longBooking)
         console.log('Name: ' + name);
         console.log('Phone number: ' + phoneNumber);
-        const details = {storeId, date, selectedTime, numOfGuests, duration, name, phoneNumber}
+        const details = {storeId, date, selectedTime, numOfGuests, longBooking, name, phoneNumber}
         makeBooking(details).then((res) => {
             setConfirmation(res)
         })
@@ -96,7 +96,7 @@ export default function Book () {
     const timeSelect = () => {
         const list = []
         for(let i = 0; i < availableTimes?.length; i++){
-            list.push(<option value={availableTimes[i]}> {formatTime(availableTimes[i])} : {availableSeats[i]} seats available </option>)
+            list.push(<option value={availableTimes[i]}> {availableTimes[i]} : {availableSeats[i]} seats available </option>)
         }
         return list
     }
@@ -130,10 +130,10 @@ export default function Book () {
             </div>
             <div hidden={!numOfGuests || !date}>
                 <h3>Select the duration of booking:</h3>
-                <select value={duration} onChange={e => setDuration(e.target.value)}>
-                    <option value='' disabled selected hidden>Select duration</option>
-                    <option value='1'>1 hour</option>
-                    <option calue='1.5'>1 hour 30 minutes</option>
+                <select value={longBooking} onChange={e => setLongBooking(e.target.value)}>
+                    {/* <option value='' disabled selected hidden>Select duration</option> */}
+                    <option value = {false} selected> 1 hour</option>
+                    <option value = {true}>1 hour 30 minutes</option>
                 </select>
             </div>
             <div hidden={!numOfGuests || !date}>
