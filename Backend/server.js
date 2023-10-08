@@ -45,17 +45,19 @@ app.get('/menu', async (req, res) => {
 app.get('/bookings', async (req, res) => {
   const storeId = req.query.store;
   const date = new Date(req.query.date)
+  const longBooking = (req.query.longBooking == 'true')
   let times = []
   let seats = []
   let timesString = []
-  const longBooking = true;
+  let open = false
+  let full = false
 
   const storeInfo = await getStoreInfo(storeId, date.getDay())
   const closeTime = convertToSeconds(storeInfo.closeTime)
   const openTime = convertToSeconds(storeInfo.openTime)
   const capacity = storeInfo.capacity
 
-  for(let i = openTime; i < closeTime - (longBooking ? 60: 30); i+=30){
+  for(let i = openTime; i < closeTime; i+=30){
     times.push(i)
   }
 
@@ -67,9 +69,44 @@ app.get('/bookings', async (req, res) => {
     seats.push(capacity)
   })
 
-  let value = {times: timesString, seats}
-  checkBookingAvailability(storeId, date);
-  res.json(value)
+  if(times.length > 0){
+    open = true
+  }
+
+  let bookings = await checkBookingAvailability(storeId, date);
+  bookings.forEach((item) => {
+    console.log(item)
+    let time = convertToSeconds(item.booking_start)
+    let index = times.indexOf(time)
+    seats[index] -= item.sum;
+    seats[index+1] -= item.sum;
+    if(item.long_booking){
+      seats[index+2] -= item.sum
+    }
+  })
+
+  for(let i = 0; i < seats.length - 2; i++){
+    if(longBooking && i<seats.length-2){
+      seats[i] = Math.min(seats[i], seats[i+1], seats[i+2])
+    } else {
+      seats[i] = Math.min(seats[i], seats[i+1])
+    }
+  }
+
+  if(longBooking){
+    timesString = timesString.slice(0, -2)
+    seats = seats.slice(0, -2)
+  } else {
+    timesString = timesString.slice(0, -1)
+    seats = seats.slice(0, -1)
+  }
+
+  res.json({
+    times: timesString,
+    seats,
+    open,
+    full
+  })
 })
 
 app.get('/storeID', async (req, res) => {
@@ -92,10 +129,12 @@ app.get('/storeList', async (req, res) => {
 app.post('/createBooking', async (req, res) => {
   console.log(req.query)
   const {storeId, date, selectedTime, numOfGuests, longBooking, name, phoneNumber} = req.query;
+  let formatedDate = new Date(date);
+  console.log(formatedDate)
   if(!storeId || !date || !selectedTime || !numOfGuests || !longBooking || !name || !phoneNumber){
     res.json({msg: 'Fill in every field', class: 'error'})
   } else {
-    createBooking({storeId, date, selectedTime, numOfGuests, longBooking, name, phoneNumber})
+    createBooking({storeId, formatedDate, selectedTime, numOfGuests, longBooking, name, phoneNumber})
     .then(() => res.json({msg: 'Booking placed'}))
     .catch((e) => res.json({msg: 'Something went wrong', class: 'error', error: e}))
   }

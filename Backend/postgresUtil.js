@@ -15,14 +15,15 @@ const checkBookingAvailability = async (store, date) => {
     const bookings = await client.query(
         `SELECT booking_start,
             long_booking,
-            table_size
+            SUM(table_size)
         FROM bookings
         WHERE restaurant_id = $1
-          AND booking_date = $2`,
+          AND booking_date = $2
+        GROUP BY booking_start, long_booking`,
         [store, date]
     )
-    console.log('Bookings: ')
-    console.log(bookings.rows)
+
+    return bookings.rows
     
     //bookings format: [{time_slot, duration}]
     // let availability = [{time, slots}]
@@ -85,7 +86,7 @@ async function createBooking(info){
     await client.query(
         `INSERT INTO bookings(restaurant_id, booking_date, booking_start, table_size, long_booking, booking_name, phone)
         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [info.storeId, info.date, info.selectedTime, info.numOfGuests, info.longBooking, info.name, info.phoneNumber]
+        [info.storeId, info.formatedDate, info.selectedTime, info.numOfGuests, info.longBooking, info.name, info.phoneNumber]
     ).then((res) => console.log(res))
     .catch((e) => console.log(e))
 }

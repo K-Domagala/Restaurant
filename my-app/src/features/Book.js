@@ -25,6 +25,7 @@ export default function Book () {
     const [selectedTime, setSelectedTime] = useState('');
     const [storeId, setStoreId] = useState('1');
     const [confirmation, setConfirmation] = useState({});
+    const [storeState, setStoreState] = useState('');
 
     const setName = (e) => {
         dispatch({
@@ -52,9 +53,16 @@ export default function Book () {
     useEffect(() => {
         if(storeId && date){
         getTimeSlotsArray(storeId, date?.toJSON(), longBooking).then(res => {
-            setAvailableTimes(res.data.times);
-            setAvailableSeats(res.data.seats);
-            console.log(res.data)
+            if(res.data.open == false){
+                setStoreState('Restaurant is closed on that day')
+            } else if(res.data.full == true){
+                setStoreState('Restaurant is fully booked')
+            } else {
+                setStoreState('')
+                setAvailableTimes(res.data.times);
+                setAvailableSeats(res.data.seats);
+                console.log(res.data)
+            }
         }).catch((e) => console.log(e))
         console.log(formatDate(date));
         console.log(date?.toJSON())}
@@ -136,14 +144,15 @@ export default function Book () {
                     <option value = {true}>1 hour 30 minutes</option>
                 </select>
             </div>
-            <div hidden={!numOfGuests || !date}>
-            <   h3>Select the time slot:</h3>
+            <h3 className='error'>{storeState}</h3>
+            <div hidden={!numOfGuests || !date || storeState}>
+            <h3>Select the time slot:</h3>
                 <select value={selectedTime} onChange={e => setSelectedTime(e.target.value)}>
                     <option value='' disabled selected hidden>Select slot</option>
                     {timeSelect()}
                 </select>
             </div>
-            <div hidden={!selectedStore || !selectedTime}>
+            <div hidden={!selectedStore || !selectedTime || storeState}>
                 <h3>Details:</h3>
                 <h2 className={confirmation.class}>{confirmation.msg}</h2>
                 <form onSubmit={handleSubmit}>

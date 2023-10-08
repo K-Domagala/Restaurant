@@ -30,10 +30,11 @@ export function getStoreId(store, setStoreId){
     })
 }
 
-export async function getTimeSlotsArray(store, date, duration){
+export async function getTimeSlotsArray(store, date, longBooking){
+    console.log(longBooking)
     const res = await Axios({
         method: 'GET',
-        params: {store, date},
+        params: {store, date, longBooking},
         withCredentials: true,
         url: 'http://localhost:3001/bookings'
     })
