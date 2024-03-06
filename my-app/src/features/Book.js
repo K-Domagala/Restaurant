@@ -16,7 +16,7 @@ export default function Book () {
     }
     const dispatch = useDispatch();
     const [date, setDate] = useState();
-    const [stores, setStores] = useState(storeMap(['Loading...']));
+    const [stores, setStores] = useState(storeMap([]));
     const [selectedStore, setSelectedStore] = useState();
     const [availableTimes, setAvailableTimes] = useState([]);
     const [availableSeats, setAvailableSeats] = useState('');
